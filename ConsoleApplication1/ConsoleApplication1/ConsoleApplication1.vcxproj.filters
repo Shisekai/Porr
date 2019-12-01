@@ -26,13 +26,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Arrrays.cpp">
+    <ClCompile Include="Arrrays.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Porr.cpp">
+    <ClCompile Include="Porr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="stdafx.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
