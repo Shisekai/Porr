@@ -1,7 +1,9 @@
 #pragma once
-//
-//int arr1000x1000[10][10];
-//int arr1000[10];
+
+#define N 4
+float inputArrKxK[N][N];
+float resultArrK[N];
+float outputArrK[N];
+
 void GenerateKxK();
-void CalculateKxK(int index);
-void Calculate();
+void Calculate(int index);
