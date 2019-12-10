@@ -1,11 +1,9 @@
 #pragma once
 
-#define N 1000
+#define N 3000
 int flag[N];
 double prev[N];
-//double x[N];
-//double a[N][N];
-//double b[N];
+int counter[N];
 double dif[N];
 double norm;
 double check[N];
@@ -14,5 +12,4 @@ int breakFlag;
 void GenerateMatrixValues();
 void CalculateMatrix(int index);
 void CheckMatrix();
-void MultiplyLast();
 void Reset();

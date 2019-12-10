@@ -5,27 +5,27 @@
 #include <math.h>
 #define G 0.5f
 #define dim N
-
 double a[dim][dim];
 double a_cpy[dim][dim];
 
 double b[dim];
 
-double y[dim / 8];
 double x[dim];
-double Bb[dim - dim / 8][dim / 8 + 1];
-double Bb_cpy[dim - dim / 8][dim / 8 + 1];
-double b0[dim / 8];
+double Bb[dim - dim / 15][dim / 15 + 1];
+double Bb_cpy[dim - dim / 15][dim / 15 + 1];
+double b0[dim / 15];
 
-double Wiy[dim / 8];
+double Wiy[dim - dim / 15];
 
-int medium = dim - dim / 16;
-int little = dim / 16;
-int fi_size = dim / 8;
+int medium = dim - dim / 15;
+int little = dim / 15;
+int fi_size = dim / 7.5;
 
-double ZW[dim / 8][dim / 8];
-double Zv[dim / 8][1];
-double Wv[dim - dim / 8][dim / 8 + 1];
+double sum[8];
+
+double ZW[dim / 15][dim / 15];
+double Zv[dim / 15][1];
+double Wv[dim - (dim / 15)][(dim / 15) + 1];
 
 int StartingTime, EndingTime;
 int Frequency;
@@ -100,11 +100,11 @@ void GenerateMatrixValues()
 		}
 		if (rand() % 2 == 0)
 		{
-			a[i][i] = N * 100; //(rowSum * 40) * 1;
+			a[i][i] = (rowSum * 2) * 1;
 		}
 		else
 		{
-			a[i][i] = N * 100;//(rowSum * 40) * 1;
+			a[i][i] = (rowSum * 2) * -1;
 		}
 		rowSum = 0;
 	}
@@ -118,24 +118,16 @@ void GenerateMatrixValues()
 		}
 	}
 	//printf("\n A = \n");
-	for (int i = 0; i<dim; i++)
-	{
-		for (int j = 0; j< dim; j++)
-		{
-			//printf("%.0lf ", a_cpy[i][j]);
-		}
-		//printf("\n");
-	}
-
-	//wyœwietlenie
 	//for (int i = 0; i<dim; i++)
 	//{
 	//	for (int j = 0; j< dim; j++)
 	//	{
-	//		printf("%.0lf ", a[i][j]);
+	//		printf("%.0lf ", a_cpy[i][j]);
 	//	}
 	//	printf("\n");
 	//}
+
+
 
 	//generacja b;
 	for (int i = 0; i < dim; i++)
@@ -151,38 +143,48 @@ void GenerateMatrixValues()
 		//printf("\n %lf", b[i]);
 	}
 	//printf("\n b0 = \n");
-	for (int i = 0; i< fi_size; i++)
+	for (int i = 0; i< little; i++)
 	{
-		b0[i] = b[dim - fi_size + i];
+		b0[i] = b[dim - little + i];
 		//printf("\n %lf", b0[i]);
 	}
 	///generacja Bb;
-	for (int k = 0; k < dim - fi_size; k++)
+	for (int k = 0; k < dim - little; k++)
 	{
-		for (int j = 0; j < fi_size; j++)
+		for (int j = 0; j < little; j++)
 		{
-			Bb[k][j] = a[k][medium - little + j];
+			Bb[k][j] = a[k][medium + j];
 		}
 	}
 
-	for (int i = 0; i < dim - fi_size; i++)
+	for (int i = 0; i < dim - little; i++)
 	{
-		Bb[i][fi_size] = b[i];
+		Bb[i][little] = b[i];
 	}
-	//printf("\n Bb0 = \n");
-	for (int i = 0; i < dim - fi_size; i++)
+	//wyœwietlenie
+	//printf("\n Bb = \n");
+	for (int i = 0; i < dim - little; i++)
 	{
-		for (int k = 0; k < fi_size + 1; k++)
+		for (int k = 0; k < little + 1; k++)
 		{
 			//printf("%lf ", Bb[i][k]);
 		}
 		//printf("\n");
 	}
+	//
+	//for (int i = 0; i<dim; i++)
+	//{
+	//	for (int j = 0; j< dim; j++)
+	//	{
+	//		printf("%.0lf ", a[i][j]);
+	//	}
+	//	printf("\n");
+	//}
 
 	//kopia bb0
-	for (int i = 0; i < dim - fi_size; i++)
+	for (int i = 0; i < dim - little; i++)
 	{
-		for (int k = 0; k < fi_size + 1; k++)
+		for (int k = 0; k < little + 1; k++)
 		{
 			Bb_cpy[i][k] = Bb[i][k];
 		}
@@ -218,11 +220,11 @@ void CalculateMatrix(int i) {
 	//}
 
 	
-	dif[i] = fabsf(prev[i] - x[i]);
-	if (dif[i]>1e5)
+	/*dif[i] = fabsf(prev[i] - x[i]);
+	if (dif[i]<1e0)
 	{
 		flag[i] = 1;
-	}
+	}*/
 	
 	//if (norm > 1e4)
 	//	flag[i] = 1;
@@ -239,30 +241,17 @@ void CheckMatrix()
 	{
 		for (int j = 0; j < N; j++)
 		{
+			if (a[i][j] == 0) continue;
 			check[i] += a[i][j] * x[j];
 		}
 	}
 	for (int i = 0; i < N; i++)
 	{
 		check[i] -= b[i];
-		norm += check[i] * check[i];
+		norm += fabs(check[i]);
 	}
-	norm = sqrt(norm);
+	//norm = (norm);
 
-	
-}
-
-void MultiplyLast() 
-{
-
-	for (int j = 0; j < little+1; j++)
-	{
-		for (int i = 0; i < N; i++)
-		{
-			a[N - j-1][i] /= a[N - j-1][N -j- 1];
-		}
-		b[N - j - 1] /= a[N - j - 1][N - j - 1];
-	}
 	
 }
 
